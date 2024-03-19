@@ -207,6 +207,9 @@ void menu() {
     lcd.setCursor(0, 0);
     lcd.print("High Score: ");
     lcd.print(highScore);
+    if(digitalRead(buttonSwitchRightLane) == HIGH){
+      menu();
+    }
   }
 }
 
