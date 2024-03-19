@@ -216,12 +216,10 @@ void menu() {
   if(digitalRead(buttonSwitchLeftLane) == HIGH){
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("High Score: ");
     uppdateHighScore();
+    lcd.print("High Score: ");
     lcd.print(highScore);
-    if(digitalRead(buttonSwitchRightLane) == HIGH){
-      menu();
-    }
+    delay(3000);
   }
 }
 
