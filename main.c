@@ -201,6 +201,10 @@ void uppdateHighScore(){
     }
 }
 
+//TODO: fixa animation vid start av spel ordetnlgit
+//TODO: fixa så vi slipper delays?
+
+
 void menu() {
     lcd.clear();
     while(!isPlaying){
