@@ -41,7 +41,7 @@ bool gameOver = false;
 bool isPlaying = false;
 bool isCarRightLane = true;
 int score = 0;
-int hihgScore = 0;
+int highScore = 0;
 
 void setup() {
   lcd.begin(16, 2);
@@ -195,11 +195,10 @@ void handleGameOver() {
     menu();
 }
 
-int highScore(){
+void uppdateHighScore(){
     if(score > highScore){
         highScore = score;
     }
-    return highScore;
 }
 
 void menu() {
@@ -216,6 +215,7 @@ void menu() {
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("High Score: ");
+    uppdateHighScore();
     lcd.print(highScore);
     if(digitalRead(buttonSwitchRightLane) == HIGH){
       menu();
