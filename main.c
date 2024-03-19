@@ -57,7 +57,7 @@ void handleGame(); // Declare the handleGame function
 
 void loop() {
   lcd.clear();
-  
+  menu();
 }
 
 
