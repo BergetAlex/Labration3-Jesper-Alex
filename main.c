@@ -41,6 +41,7 @@ bool gameOver = false;
 bool isPlaying = false;
 bool isCarRightLane = true;
 int score = 0;
+int hihgScore = 0;
 
 void setup() {
   lcd.begin(16, 2);
@@ -185,11 +186,20 @@ void handleGame() {
 void handleGameOver() {
     gameOver = true;
     lcd.clear();
+    lcd.setCursor(0,0);
     lcd.print("Game Over");
-    
     lcd.setCursor(0,1);
-    lcd.print("SCORE: ");
+    lcd.print("Score: ");
     lcd.print(score);
+    delay(3000);
+    menu();
+}
+
+int highScore(){
+    if(score > highScore){
+        highScore = score;
+    }
+    return highScore;
 }
 
 void menu() {
@@ -213,10 +223,4 @@ void menu() {
   }
 }
 
-int highScore(){
-    if(score > highScore){
-        highScore = score;
-    }
-    return highScore;
-}
 
