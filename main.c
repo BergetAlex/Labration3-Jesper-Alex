@@ -192,6 +192,24 @@ void handleGameOver() {
     lcd.print(score);
 }
 
+void menu() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("1. Start Game");
+  lcd.setCursor(0, 1);
+  lcd.print("2. High Score");
+  lcd.setCursor(0, 2);
+  if(digitalRead(buttonSwitchRightLane) == HIGH){
+    startGame();
+  }
+  if(digitalRead(buttonSwitchLeftLane) == HIGH){
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("High Score: ");
+    lcd.print(highScore);
+  }
+}
+
 int highScore(){
     if(score > highScore){
         highScore = score;
