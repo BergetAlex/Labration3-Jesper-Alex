@@ -57,7 +57,7 @@ void handleGame(); // Declare the handleGame function
 
 void loop() {
   lcd.clear();
-  handleGame(); 
+  
 }
 
 
@@ -191,3 +191,11 @@ void handleGameOver() {
     lcd.print("SCORE: ");
     lcd.print(score);
 }
+
+int highScore(){
+    if(score > highScore){
+        highScore = score;
+    }
+    return highScore;
+}
+
