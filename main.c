@@ -208,9 +208,11 @@ void menu() {
   lcd.setCursor(0, 1);
   lcd.print("2. High Score");
   lcd.setCursor(0, 2);
+
   if(digitalRead(buttonSwitchRightLane) == HIGH){
     startGame();
   }
+  
   if(digitalRead(buttonSwitchLeftLane) == HIGH){
     lcd.clear();
     lcd.setCursor(0, 0);
