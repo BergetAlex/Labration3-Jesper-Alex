@@ -211,8 +211,10 @@ void handleGame() {
         
         if(isCarRightLane) //spawnar bilen igen efter level up
             putCarRightLane();
+            display();
         else
             putCarLeftLane();
+            display();
     }
   }
   isPlaying = false;
