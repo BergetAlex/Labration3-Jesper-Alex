@@ -25,6 +25,28 @@ byte car2[8] = {
   B00000
 };
 
+byte spawn1[8] = {
+  B11111,
+  B00011,
+  B00001,
+  B00001,
+  B00001,
+  B00001,
+  B00011,
+  B11111
+};
+
+byte spawn2[8] = {
+  B11111,
+  B00011,
+  B00001,
+  B00001,
+  B00001,
+  B00001,
+  B00011,
+  B11111
+};
+
 const int buttonSwitchRightLane = 6;
 const int buttonSwitchLeftLane = 7;
 
@@ -153,6 +175,12 @@ void handleGameOver(); // Declare the handleGameOver function
 void handleGame() {
   while(!gameOver){
     
+    lcd.setCursor(15, 0);
+    lcd.print(score);
+    lcd.setcursor(14,0);
+    lcd.print(spawn1);
+    lcd.setcursor(14,1);
+    lcd.print(spawn2);
     static bool spawnCar = true; //körs 1 gång per loop
         if(spawnCar){ //spawnar bil1 om den inte redan är på skärmen
             putCarRightLane(); //Bilen börjar på höger sida
