@@ -175,7 +175,7 @@ void handleGameOver(); // Declare the handleGameOver function
 void handleGame() {
   while(!gameOver){
     
-    display();
+    displayLevel();
     static bool spawnCar = true; //körs 1 gång per loop
         if(spawnCar){ //spawnar bil1 om den inte redan är på skärmen
             putCarRightLane(); //Bilen börjar på höger sida
