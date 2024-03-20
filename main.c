@@ -66,7 +66,7 @@ void loop() {
 
 void startGame() {
   isPlaying = true;
-  
+
   while (isPlaying) {
     handleGame();
   }
@@ -117,15 +117,15 @@ void moveCar2() {
         lcd.write(car2Char);
 
         if (currentCar2XPos == 0) {
+            score++;
             lcd.setCursor(currentCar2XPos, currentCar2YPos);
             lcd.clear();
             if (isCarRightLane)
                 putCarRightLane();
             else
                 putCarLeftLane();
-            isCar2Present = false;
-            score++;
-            car2recentMove = millis();
+                isCar2Present = false;
+                car2recentMove = millis();
         }
         else
             car2recentMove += car2Speed; // Increment car2recentMove by car2Speed
@@ -148,14 +148,13 @@ void spawnCar2() {
 }
 
 void handleGameOver(); // Declare the handleGameOver function
-void showCar(int position); // Declare the showCar function
 
 //Funktion för att hantera spelet
 void handleGame() {
   while(!gameOver){
     
-    static bool spawnCar = true;
-        if(spawnCar){
+    static bool spawnCar = true; //körs 1 gång per loop
+        if(spawnCar){ //spawnar bil1 om den inte redan är på skärmen
             putCarRightLane(); //Bilen börjar på höger sida
             spawnCar = false;
         }
@@ -171,23 +170,31 @@ void handleGame() {
     }
 
     if(isCar2Present == false){ // Om bilen inte redan är på skärmen
-        //spawnar en bil
-        spawnCar2();
-        //spela ljud?
+      //spawnar en bil
+      spawnCar2();
+      //spela ljud?
     }else{
-        //flyttar bilen
-        moveCar2();
-        if(checkCollision()){ // Om bilen kolliderar
-            handleGameOver(); // Hantera Game over
-        }
+      //flyttar bilen
+      moveCar2();
+      if(checkCollision()){ // Om bilen kolliderar
+        handleGameOver(); // Hantera Game over
+      }
     }
     if(score == amountOfCars){
         level++;
         initialiseLevel();
     }
   }
+  isPlaying = false;
+  gameOver = false;
+  menu();
 }
 
+void uppdateHighScore(){
+    if(score > highScore){
+        highScore = score;
+    }
+}
 void handleGameOver() {
     gameOver = true;
     lcd.clear();
@@ -197,36 +204,37 @@ void handleGameOver() {
     lcd.print("Score: ");
     lcd.print(score);
     delay(3000);
-    menu();
+    
+    uppdateHighScore(); //uppdatera highscore om det behövs
+    score = 0;
 }
 
-void uppdateHighScore(){
-    if(score > highScore){
-        highScore = score;
-    }
-}
+
+//TODO: fixa animation vid start av spel ordetnlgit
+//TODO: fixa så vi slipper delays?
+
 
 void menu() {
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("1. Start Game");
-  lcd.setCursor(0, 1);
-  lcd.print("2. High Score");
-  lcd.setCursor(0, 2);
-
-  if(digitalRead(buttonSwitchRightLane) == HIGH){
-    startGame();
-  }
-  
-  if(digitalRead(buttonSwitchLeftLane) == HIGH){
     lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("High Score: ");
-    uppdateHighScore();
-    lcd.print(highScore);
-    if(digitalRead(buttonSwitchRightLane) == HIGH){
-      menu();
-    }
+    while(!isPlaying){
+      lcd.setCursor(0, 0);
+      lcd.print("1. Start Game");
+      lcd.setCursor(0, 1);
+      lcd.print("2. High Score");
+      lcd.setCursor(0, 2);
+
+      if(digitalRead(buttonSwitchRightLane) == HIGH){
+        startGame();
+      }
+      
+      if(digitalRead(buttonSwitchLeftLane) == HIGH){
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        uppdateHighScore();
+        lcd.print("High Score: ");
+        lcd.print(highScore);
+        delay(3000);
+      }
   }
 }
 
