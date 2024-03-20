@@ -208,13 +208,7 @@ void handleGame() {
     if(score == amountOfCars){ //kollar om det är dags för level up
         level++;
         initialiseLevel();
-        
-        if(isCarRightLane) //spawnar bilen igen efter level up
-            putCarRightLane();
-            display();
-        else
-            putCarLeftLane();
-            display();
+        displayLevel();    
     }
   }
   isPlaying = false;
@@ -293,11 +287,15 @@ void initialiseLevel() {
     }
 }
 
-void display(){
-   lcd.setCursor(15, 0);
+void displayLevel(){
+    lcd.setCursor(15, 0);
     lcd.print(score);
     lcd.setcursor(14,0);
     lcd.print(spawn1);
     lcd.setcursor(14,1);
     lcd.print(spawn2);
+    if(isCarRightLane)
+        putCarRightLane();
+    else
+        putCarLeftLane();
 }
