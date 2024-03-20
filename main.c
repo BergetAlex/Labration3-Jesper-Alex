@@ -42,6 +42,8 @@ bool isPlaying = false;
 bool isCarRightLane = true;
 int score = 0;
 int highScore = 0;
+int level = 1;
+int amountOfCars = 2;
 
 void setup() {
   lcd.begin(16, 2);
@@ -179,7 +181,10 @@ void handleGame() {
             handleGameOver(); // Hantera Game over
         }
     }
-
+    if(score == amountOfCars){
+        level++;
+        initialiseLevel();
+    }
   }
 }
 
@@ -225,4 +230,25 @@ void menu() {
   }
 }
 
+void initialiseLevel() {
+    amountOfCars = level * 2;
+    car2Speed = 500 - (level * 50);
+    ldc.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Level: ");
+    lcd.print(level);
+    delay(1000);
+    lcd.clear();
+    if(level == 10){
+        gameOver = true;
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("You Win!");
+        lcd.setCursor(0,1);
+        lcd.print("Score: ");
+        lcd.print(score);
+        delay(3000);
+        menu();
+    }
+}
 
