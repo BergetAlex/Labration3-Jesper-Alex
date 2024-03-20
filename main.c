@@ -175,12 +175,7 @@ void handleGameOver(); // Declare the handleGameOver function
 void handleGame() {
   while(!gameOver){
     
-    lcd.setCursor(15, 0);
-    lcd.print(score);
-    lcd.setcursor(14,0);
-    lcd.print(spawn1);
-    lcd.setcursor(14,1);
-    lcd.print(spawn2);
+    display();
     static bool spawnCar = true; //körs 1 gång per loop
         if(spawnCar){ //spawnar bil1 om den inte redan är på skärmen
             putCarRightLane(); //Bilen börjar på höger sida
@@ -296,3 +291,11 @@ void initialiseLevel() {
     }
 }
 
+void display(){
+   lcd.setCursor(15, 0);
+    lcd.print(score);
+    lcd.setcursor(14,0);
+    lcd.print(spawn1);
+    lcd.setcursor(14,1);
+    lcd.print(spawn2);
+}
