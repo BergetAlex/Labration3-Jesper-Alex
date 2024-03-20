@@ -138,16 +138,16 @@ void moveCar2() {
         lcd.setCursor(currentCar2XPos, currentCar2YPos);
         lcd.write(car2Char);
 
-        if (currentCar2XPos == 0) {
+        if (currentCar2XPos == 0) { //när bilen når slutet av skärmen så tas den bort och score ökar
             score++;
             lcd.setCursor(currentCar2XPos, currentCar2YPos);
             lcd.clear();
+            isCar2Present = false;
+            car2recentMove = millis();
             if (isCarRightLane)
                 putCarRightLane();
             else
                 putCarLeftLane();
-                isCar2Present = false;
-                car2recentMove = millis();
         }
         else
             car2recentMove += car2Speed; // Increment car2recentMove by car2Speed
@@ -204,13 +204,20 @@ void handleGame() {
     }else{
       //flyttar bilen
       moveCar2();
+
       if(checkCollision()){ // Om bilen kolliderar
         handleGameOver(); // Hantera Game over
       }
     }
-    if(score == amountOfCars){
+    
+    if(score == amountOfCars){ //kollar om det är dags för level up
         level++;
         initialiseLevel();
+        
+        if(isCarRightLane) //spawnar bilen igen efter level up
+            putCarRightLane();
+        else
+            putCarLeftLane();
     }
   }
   isPlaying = false;
@@ -262,6 +269,7 @@ void menu() {
         lcd.print("High Score: ");
         lcd.print(highScore);
         delay(3000);
+        lcd.clear();
       }
   }
 }
