@@ -241,7 +241,7 @@ void menu() {
 void initialiseLevel() {
     amountOfCars = level * 2;
     car2Speed = 500 - (level * 50);
-    ldc.clear();
+    lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("Level: ");
     lcd.print(level);
