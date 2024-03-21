@@ -3,6 +3,9 @@
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
+void handleGameOver(); // Declare the handleGameOver function
+void displayLevel(); // Declare the displayLevel function
+
 byte car[8] = {
   B00000,
   B00000,
@@ -36,17 +39,6 @@ byte spawn1[8] = {
   B11111
 };
 
-byte spawn2[8] = {
-  B11111,
-  B00011,
-  B00001,
-  B00001,
-  B00001,
-  B00001,
-  B00011,
-  B11111
-};
-
 const int buttonSwitchRightLane = 6;
 const int buttonSwitchLeftLane = 7;
 
@@ -59,6 +51,8 @@ const int lcdColumn = 16;
 bool isCar2Present = false;
 const int car2Char = 6;
 const int carChar = 7;
+const int spawn1Char = 8;
+
 bool gameOver = false;
 bool isPlaying = false;
 bool isCarRightLane = true;
@@ -69,8 +63,10 @@ int amountOfCars = 2;
 
 void setup() {
   lcd.begin(16, 2);
-  lcd.createChar(carChar, car);
-  lcd.createChar(car2Char, car2);
+  lcd.createChar(carChar, car); // Create a new character
+  lcd.createChar(car2Char, car2);  // Create a new character
+  lcd.createChar(spawn1Char, spawn1); // Create tunel1
+
   pinMode(buttonSwitchRightLane, INPUT_PULLUP);
   pinMode(buttonSwitchLeftLane, INPUT_PULLUP);
   randomSeed(analogRead(0));
@@ -157,7 +153,7 @@ void moveCar2() {
 //Funktion för att försöka spawna bil 2
 void spawnCar2() {
     if(!isCar2Present) { // Om bilen inte redan är på skärmen
-        int positionX = 15;
+        int positionX = 14;
         int positionY = random(0, 2);
         lcd.setCursor(positionX, positionY);
         lcd.write(car2Char);
@@ -169,13 +165,11 @@ void spawnCar2() {
     }   
 }
 
-void handleGameOver(); // Declare the handleGameOver function
-
 //Funktion för att hantera spelet
 void handleGame() {
   while(!gameOver){
     
-    display();
+    displayLevel();
     static bool spawnCar = true; //körs 1 gång per loop
         if(spawnCar){ //spawnar bil1 om den inte redan är på skärmen
             putCarRightLane(); //Bilen börjar på höger sida
@@ -249,11 +243,11 @@ void menu() {
       lcd.print("2. High Score");
       lcd.setCursor(0, 2);
 
-      if(digitalRead(buttonSwitchRightLane) == HIGH){
+      if(digitalRead(buttonSwitchLeftLane) == HIGH){
         startGame();
       }
       
-      if(digitalRead(buttonSwitchLeftLane) == HIGH){
+      if(digitalRead(buttonSwitchRightLane) == HIGH){
         lcd.clear();
         lcd.setCursor(0, 0);
         uppdateHighScore();
@@ -290,10 +284,10 @@ void initialiseLevel() {
 void displayLevel(){
     lcd.setCursor(15, 0);
     lcd.print(score);
-    lcd.setcursor(14,0);
-    lcd.print(spawn1);
-    lcd.setcursor(14,1);
-    lcd.print(spawn2);
+    lcd.setCursor(14,0);
+    lcd.write(spawn1Char);
+    lcd.setCursor(14,1);
+    lcd.write(spawn1Char);
     if(isCarRightLane)
         putCarRightLane();
     else
