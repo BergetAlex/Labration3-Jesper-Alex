@@ -227,15 +227,10 @@ void handleGameOver() {
     lcd.print("Score: ");
     lcd.print(score);
     delay(3000);
-    
+    level = 1;
     uppdateHighScore(); //uppdatera highscore om det behövs
     score = 0;
 }
-
-
-//TODO: fixa animation vid start av spel ordetnlgit
-//TODO: fixa så vi slipper delays?
-
 
 void menu() {
     lcd.clear();
@@ -246,14 +241,14 @@ void menu() {
       lcd.print("2. High Score");
       lcd.setCursor(0, 2);
 
-      if(digitalRead(buttonSwitchLeftLane) == HIGH){
+      if(digitalRead(buttonSwitchLeftLane) == HIGH){ //om knapp 1 trycks (starta spelet)
         introSequencePlaying = true; //ställer om så att intro sequencen spelas
         introSequence(); //spelar intro sequencen
             
         startGame();
       }
       
-      if(digitalRead(buttonSwitchRightLane) == HIGH){
+      if(digitalRead(buttonSwitchRightLane) == HIGH){ //om knapp 2 trycks (visa highscore)
         lcd.clear();
         lcd.setCursor(0, 0);
         uppdateHighScore();
@@ -381,7 +376,4 @@ void introSequence() {
     lcd.print("GO!");
     delay(500);
     lcd.clear();
-
-    currentCar2XPos = 0;
-    currentCar2YPos = 1;
 }
