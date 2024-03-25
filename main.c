@@ -371,7 +371,6 @@ void introSequence() {
       //flyttar bilarna tills de når slutet av skärmen
     moveCar2Intro();
   
-    
     for(int i = 3; i > 0; i--){
         lcd.clear();
         lcd.setCursor(8,1);
