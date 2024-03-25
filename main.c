@@ -155,7 +155,7 @@ void moveCar2() {
 //Funktion för att försöka spawna bil 2
 void spawnCar2() {
     if(!isCar2Present) { // Om bilen inte redan är på skärmen
-        int positionX = 14;
+        int positionX = 12;
         int positionY = random(0, 2);
         lcd.setCursor(positionX, positionY);
         lcd.write(car2Char);
@@ -261,7 +261,7 @@ void menu() {
   }
 }
 
-void initialiseLevel() {
+void initialiseLevel() { //initierar leveln och ökar svårighetsgraden
     amountOfCars = level * 2;
     car2Speed = 500 - (level * 50);
     lcd.clear();
@@ -283,12 +283,18 @@ void initialiseLevel() {
     }
 }
 
-void displayLevel(){
-    lcd.setCursor(15, 0);
-    lcd.print(score);
-    lcd.setCursor(14,0);
+void displayLevel(){ //printar alla statiska saker på skärmen, som level, score och tunnlarna (spawn1)
+    if(score >= 10){ //fixar så vi printar score på rätt plats
+        lcd.setCursor(14, 0);
+        lcd.print(score);
+    }else{
+        lcd.setCursor(15, 0);
+        lcd.print(score);
+    }
+
+    lcd.setCursor(13,0);
     lcd.write(spawn1Char);
-    lcd.setCursor(14,1);
+    lcd.setCursor(13,1);
     lcd.write(spawn1Char);
     if(isCarRightLane)
         putCarRightLane();
