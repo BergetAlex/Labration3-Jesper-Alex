@@ -6,6 +6,8 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 void handleGameOver(); // Declare the handleGameOver function
 void displayLevel(); // Declare the displayLevel function
 
+//TODO: Fixa så att score inte skriver över en 
+
 byte car[8] = {
   B00000,
   B00000,
