@@ -59,7 +59,6 @@ const int car2Char = 6;
 const int carChar = 7;
 const int spawn1Char = 8;
 
-bool introSequencePlaying = true;
 bool gameOver = false;
 bool isPlaying = false;
 bool isCarRightLane = true;
