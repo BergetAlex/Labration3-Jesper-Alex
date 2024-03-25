@@ -6,6 +6,8 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 void handleGameOver(); // Declare the handleGameOver function
 void displayLevel(); // Declare the displayLevel function
 void introSequence(); // Declare the introSequence function
+void startGame(); // Declare the startGame function
+void handleGame(); // Declare the handleGame function
 
 //TODO: Fixa så att score inte skriver över en 
 
@@ -89,10 +91,6 @@ void setup() {
   pinMode(buttonSwitchLeftLane, INPUT_PULLUP);
   randomSeed(analogRead(0));
 }
-
-void startGame(); // Declare the startGame function
-
-void handleGame(); // Declare the handleGame function
 
 void loop() {
   lcd.clear();
@@ -241,8 +239,8 @@ void handleGameOver() {
     lcd.print("Score: ");
     lcd.print(score);
     delay(3000);
-    level = 1;
     uppdateHighScore(); //uppdatera highscore om det behövs
+    level = 1; //resetar level
     score = 0;
 }
 
@@ -315,8 +313,6 @@ void displayLevel(){ //printar alla statiska saker på skärmen, som level, scor
         putCarLeftLane();
 }
 
-
-
 void spawnCar2Intro() { //funktion som spawnar 2 bilar för intro sequencen
     //spawnr bil 1 (intro car variablar)
     //spawnar bil 2 (current car variablar)
@@ -336,8 +332,6 @@ void spawnCar2Intro() { //funktion som spawnar 2 bilar för intro sequencen
         introCarSpeed = 300;
         introCarRecentMove = millis();
 }
-
-
 
 //fixa så whilen kollar om X postionen istället för boolen, sparar en variabel
 void moveCar2Intro() { //funktion som flyttar på bilarna för intro sequencen
