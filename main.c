@@ -91,6 +91,7 @@ void loop() {
 
 void startGame() {
   isPlaying = true;
+  isCar2Present = false;
 
   while (isPlaying) {
     handleGame();
@@ -208,9 +209,11 @@ void handleGame() {
         displayLevel();    
     }
   }
+  
   isPlaying = false;
   gameOver = false;
   menu();
+
 }
 
 void uppdateHighScore(){
@@ -242,7 +245,7 @@ void menu() {
       lcd.setCursor(0, 2);
 
       if(digitalRead(buttonSwitchLeftLane) == HIGH){ //om knapp 1 trycks (starta spelet)
-        introSequencePlaying = true; //ställer om så att intro sequencen spelas
+
         introSequence(); //spelar intro sequencen
             
         startGame();
@@ -327,7 +330,7 @@ void spawnCar2Intro() { //funktion som spawnar 2 bilar för intro sequencen
 
 //fixa så whilen kollar om X postionen istället för boolen, sparar en variabel
 void moveCar2Intro() { //funktion som flyttar på bilarna för intro sequencen
-  while(introSequencePlaying){
+  while(introCarXPos > 0){
     if ((millis() - introCarRecentMove) > introCarSpeed) { // check if it is time to move the car
         //flyttar bil 1
         lcd.setCursor(currentCar2XPos, currentCar2YPos);
@@ -345,7 +348,6 @@ void moveCar2Intro() { //funktion som flyttar på bilarna för intro sequencen
         
         
         if(introCarXPos == 0) { //när bilarna når slutet av skärmen så tas den bort
-            introSequencePlaying = false; //avslutar intro sequencen
             lcd.setCursor(introCarXPos, introCarYPos);
             lcd.print(" ");
             lcd.setCursor(currentCar2XPos, currentCar2YPos);
