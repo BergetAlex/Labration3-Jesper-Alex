@@ -49,7 +49,7 @@ int currentCar2XPos,currentCar2YPos, introCarXPos, introCarYPos; //sparar bilarn
 unsigned long car2Speed = 500; //hur snabbt bil 2 ska röra sig
 unsigned long int car2recentMove; //sparar bil 2's senaste rörelse
 
-unsigned long int introCarSpeed = 350; //hur snabbt intro bilarna ska röra sig
+unsigned long int introCarSpeed; //hur snabbt intro bilarna ska röra sig
 unsigned long int introCarRecentMove; //sparar intro bilarnas senaste rörelse
 
 const int menuSize = 2;
@@ -178,11 +178,6 @@ void handleGame() {
   while(!gameOver){
     
     displayLevel();
-    static bool spawnCar = true; //körs 1 gång per loop
-        if(spawnCar){ //spawnar bil1 om den inte redan är på skärmen
-            putCarRightLane(); //Bilen börjar på höger sida
-            spawnCar = false;
-        }
 
     lcd.setCursor(13, 0);
     //lcd.print(score);
@@ -252,7 +247,9 @@ void menu() {
       lcd.setCursor(0, 2);
 
       if(digitalRead(buttonSwitchLeftLane) == HIGH){
+        introSequencePlaying = true; //ställer om så att intro sequencen spelas
         introSequence(); //spelar intro sequencen
+            
         startGame();
       }
       
@@ -326,10 +323,14 @@ void spawnCar2Intro() { //funktion som spawnar 2 bilar för intro sequencen
 
 
         lcd.setCursor(currentCar2XPos, currentCar2YPos); //spawnar bil 2
-        lcd.write(car2Char);   
+        lcd.write(car2Char);
+        introCarSpeed = 300;
+        introCarRecentMove = millis();
 }
 
 
+
+//fixa så whilen kollar om X postionen istället för boolen, sparar en variabel
 void moveCar2Intro() { //funktion som flyttar på bilarna för intro sequencen
   while(introSequencePlaying){
     if ((millis() - introCarRecentMove) > introCarSpeed) { // check if it is time to move the car
@@ -364,11 +365,11 @@ void moveCar2Intro() { //funktion som flyttar på bilarna för intro sequencen
 
 
 void introSequence() {
-    //spawnar bilarna
     spawnCar2Intro();  
-    //flyttar bilarna tills de når slutet av skärmen
+      //flyttar bilarna tills de når slutet av skärmen
     moveCar2Intro();
-
+  
+    
     for(int i = 3; i > 0; i--){
         lcd.clear();
         lcd.setCursor(8,1);
@@ -380,4 +381,7 @@ void introSequence() {
     lcd.print("GO!");
     delay(500);
     lcd.clear();
+
+    currentCar2XPos = 0;
+    currentCar2YPos = 1;
 }
