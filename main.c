@@ -42,23 +42,34 @@ byte spawn1[8] = {
   B11111
 };
 
+//knapparna pinar
 const int buttonSwitchRightLane = 6;
 const int buttonSwitchLeftLane = 7;
+//----------------------------------------------
 
+
+//variabler för bilarna
 int currentCar2XPos,currentCar2YPos, introCarXPos, introCarYPos; //sparar bilarnas position
 unsigned long car2Speed = 500; //hur snabbt bil 2 ska röra sig
 unsigned long int car2recentMove; //sparar bil 2's senaste rörelse
 
 unsigned long int introCarSpeed; //hur snabbt intro bilarna ska röra sig
 unsigned long int introCarRecentMove; //sparar intro bilarnas senaste rörelse
+//----------------------------------------------
 
-const int menuSize = 2;
+//variabler för lcdn
+const int menuSize = 2; 
 const int lcdColumn = 16;
-bool isCar2Present = false;
-const int car2Char = 6;
-const int carChar = 7;
-const int spawn1Char = 8;
+//----------------------------------------------
 
+//variabler för karaktärerna
+const int carChar = 7;
+const int car2Char = 6;
+const int spawn1Char = 8;
+//----------------------------------------------
+
+//variabler för spelets funktionalitet
+bool isCar2Present = false;
 bool gameOver = false;
 bool isPlaying = false;
 bool isCarRightLane = true;
@@ -66,6 +77,7 @@ int score = 0;
 int highScore = 0;
 int level = 1;
 int amountOfCars = 2;
+//----------------------------------------------
 
 void setup() {
   lcd.begin(16, 2);
