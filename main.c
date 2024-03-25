@@ -90,8 +90,8 @@ void loop() {
 
 void startGame() {
   isPlaying = true;
-  isCar2Present = false;
-
+  isCar2Present = false; //Resetar denna variabel så att bil 2 kan spawna som vanligt vid ny omgång
+  
   while (isPlaying) {
     handleGame();
   }
