@@ -93,6 +93,7 @@ int amountOfCars = 2;
 int car2Counter = 0;
 unsigned long int timeSinceCarSpawned = 0; //sparar tiden sedan bil framför spawnades
 unsigned long int timeBetweenCars = 2200; //tiden mellan bilarna
+int temp = level + score;
 //----------------------------------------------
 
 void setup() {
@@ -148,13 +149,13 @@ int checkCollision() { //kollar om bil2 har kolliderat med bil1
     for(int i = 0; i < MaxCars; i++) {
         if(car[i].isPresent) {
             if(isCarRightLane){ //Bil 1 är på 1,0
-                if(car[i].x == 1 && car[i].y == 0)
+                if(car[i].x == 1 && car[i].y == 1)
                     return 1;
                 else    
                     return 0;
             }
             if(!isCarRightLane) { //Bil 1 är på 1,1
-                if(car[i].x == 1 && car[i].y == 1)
+                if(car[i].x == 1 && car[i].y == 0)
                     return 1;
                 else
                     return 0;
@@ -202,7 +203,7 @@ bool canSpawnCar2() {
 
 //Funktion för att försöka spawna bil 2
 void spawnCar2() {
- if (canSpawnCar2()) {
+ if (canSpawnCar2() && car2Counter != level) {
     
     for(int i = 0; i < MaxCars; i++) {
       
@@ -214,6 +215,7 @@ void spawnCar2() {
         car[i].isPresent = true;
         car[i].lastMove = millis();
         timeSinceCarSpawned = millis(); // Update the time of the last spawn
+        car2Counter++;
         break;
       }
     }
@@ -237,12 +239,11 @@ void handleGame() {
       spawnCar2();
       moveCar2();
 
-      //if(checkCollision()){ // Om bilen kolliderar
-       // handleGameOver(); // Hantera Game over
-     // }
+      if(checkCollision()){ // Om bilen kolliderar
+       handleGameOver(); // Hantera Game over
+     }
     
-    
-    if(score == amountOfCars){ //kollar om det är dags för level up
+    if(temp == score){ //kollar om det är dags för level up
         level++;
         initialiseLevel();
         displayLevel();    
@@ -303,6 +304,14 @@ void menu() {
 }
 
 void initialiseLevel() { //initierar leveln och ökar svårighetsgraden
+    
+    for(int i = 0; i < MaxCars; i++) {
+        car[i].x = 0; //sätter bilarna till startpositionen
+        car[i].y = 0;
+        car[i].lastMove = 0;
+        car[i].isPresent = false;
+    }
+    
     timeBetweenCars = car2Speed * 4; //uppdaterar tiden mellan bilarna
     amountOfCars += level;
     car2Speed = 350 - (level * 25);
@@ -312,6 +321,8 @@ void initialiseLevel() { //initierar leveln och ökar svårighetsgraden
     lcd.print(level);
     delay(1000);
     lcd.clear();
+    car2Counter = 0;
+    temp = level + score;
 }
 
 void displayLevel(){ //printar alla statiska saker på skärmen, som level, score och tunnlarna (spawn1)
@@ -321,6 +332,13 @@ void displayLevel(){ //printar alla statiska saker på skärmen, som level, scor
     }else{
         lcd.setCursor(15, 0);
         lcd.print(score);
+    }
+    if(level >= 10){ //fixar så vi printar level på rätt plats
+        lcd.setCursor(14, 1);
+        lcd.print(level);
+    }else{
+        lcd.setCursor(15, 1);
+        lcd.print(level);
     }
 
     lcd.setCursor(13,0);
