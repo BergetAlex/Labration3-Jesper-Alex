@@ -1,5 +1,6 @@
 #include <LiquidCrystal.h>
 
+#define MaxCars 3; // Max amount of cars on the screen
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
@@ -44,6 +45,13 @@ byte spawn1[8] = {
   B11111
 };
 
+typedef struct Car {
+  int x;
+  int y;
+  unsigned long int lastMove;
+  bool isPresent;
+}Car;
+
 //knapparna pinar
 const int buttonSwitchRightLane = 6;
 const int buttonSwitchLeftLane = 7;
@@ -79,6 +87,7 @@ int score = 0;
 int highScore = 0;
 int level = 1;
 int amountOfCars = 2;
+int car2Counter = 0;
 //----------------------------------------------
 
 void setup() {
@@ -87,9 +96,15 @@ void setup() {
   lcd.createChar(car2Char, car2);  // Create a new character
   lcd.createChar(spawn1Char, spawn1); // Create tunel1
 
-  pinMode(buttonSwitchRightLane, INPUT_PULLUP);
-  pinMode(buttonSwitchLeftLane, INPUT_PULLUP);
+  pinMode(buttonSwitchRightLane, INPUT);
+  pinMode(buttonSwitchLeftLane, INPUT);
   randomSeed(analogRead(0));
+
+  Car car [MaxCars]; // Skapar en array med 3 bilar
+  for(int i = 0; i < MaxCars; i++) {
+    car[i].lastMove = 0;
+    car[i].isPresent = false;
+  }
 }
 
 void loop() {
@@ -145,42 +160,55 @@ int checkCollision() { //kollar om bil2 har kolliderat med bil1
 //Funktion för att flytta bil 2
 void moveCar2() {
 
-    if ((millis() - car2recentMove) > (unsigned long)car2Speed) { // check if it is time to move the car
-        lcd.setCursor(currentCar2XPos, currentCar2YPos);
+  for(int i = 0; i < MaxCars; i++) {
+    if(car[i].isPresent) {
+      
+    if ((millis() - car[i].lastMove) > (unsigned long)car2Speed) { // check if it is time to move the car
+        lcd.setCursor(car[i].x, car[i].y);
         lcd.print(" ");
-        currentCar2XPos--;
-        lcd.setCursor(currentCar2XPos, currentCar2YPos);
+        car[i].x--;
+        lcd.setCursor(car[i].x, car[i].y);
         lcd.write(car2Char);
 
-        if (currentCar2XPos == 0) { //när bilen når slutet av skärmen så tas den bort och score ökar
+        if (car[i].x == 0) { //när bilen når slutet av skärmen så tas den bort och score ökar
             score++;
-            lcd.setCursor(currentCar2XPos, currentCar2YPos);
-            lcd.clear();
-            isCar2Present = false;
-            car2recentMove = millis();
-            if (isCarRightLane)
-                putCarRightLane();
-            else
-                putCarLeftLane();
+            lcd.setCursor(car[i].x, car[i].y);
+            lcd.print(" ");
+            car[i].isPresent = false;
+            car[i].lastMove = millis();
         }
         else
-            car2recentMove += car2Speed; // Increment car2recentMove by car2Speed
+            car[i].lastMove += car2Speed; // Increment car lastMove by car2Speed
     }
+}
+
+bool canSpawnCar2() {
+  int lastCarX = -1; // Initierar lastCarX till -1 för att ha något att jämföra med, som är falskt från början
+  for(int i = 0; i < MaxCars; i++) {
+    if(car[i].isPresent) {
+      if (lastCarX != -1 && car[i].x - lastCarX < 4) {
+        // inte trillräckligt med plats för ny bil
+        return false;
+    }
+      lastCarX = car[i].x; // uppdaterar lastCarX till nuvarande bilens x position
+    }
+  }
+  return true; // tillräckligt med plats för ny bil
 }
 
 //Funktion för att försöka spawna bil 2
 void spawnCar2() {
-    if(!isCar2Present) { // Om bilen inte redan är på skärmen
-        int positionX = 12;
-        int positionY = random(0, 2);
-        lcd.setCursor(positionX, positionY);
-        lcd.write(car2Char);
-        isCar2Present = true;
-        currentCar2XPos = positionX;
-        currentCar2YPos = positionY;
-        car2recentMove = millis();
+   for(int i = 0; i < MaxCars; i++) {
+    if(car[i].isPresent == false) {
 
-    }   
+      car[i].x = 12;
+      car[i].y = random(0, 2);
+      lcd.setCursor(car[i].x, car[i].y);
+      lcd.write(car2Char);
+      car[i].isPresent = true;
+      car[i].lastMove = millis();
+    }
+  }
 }
 
 //Funktion för att hantera spelet
@@ -279,7 +307,7 @@ void menu() {
 
 void initialiseLevel() { //initierar leveln och ökar svårighetsgraden
     amountOfCars += level;
-    car2Speed = 350 - (level * 10);
+    car2Speed = 350 - (level * 25);
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("Level: ");
