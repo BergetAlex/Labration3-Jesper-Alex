@@ -87,8 +87,8 @@ void setup() {
   lcd.createChar(car2Char, car2);  // Create a new character
   lcd.createChar(spawn1Char, spawn1); // Create tunel1
 
-  pinMode(buttonSwitchRightLane, INPUT_PULLUP);
-  pinMode(buttonSwitchLeftLane, INPUT_PULLUP);
+  pinMode(buttonSwitchRightLane, INPUT);
+  pinMode(buttonSwitchLeftLane, INPUT);
   randomSeed(analogRead(0));
 }
 
@@ -152,16 +152,13 @@ void moveCar2() {
         lcd.setCursor(currentCar2XPos, currentCar2YPos);
         lcd.write(car2Char);
 
-        if (currentCar2XPos == 0) { //när bilen når slutet av skärmen så tas den bort och score ökar
+        if (currentCar2XPos <= 0) { //när bilen når slutet av skärmen så tas den bort och score ökar
             score++;
             lcd.setCursor(currentCar2XPos, currentCar2YPos);
-            lcd.clear();
+            lcd.print(" ");
             isCar2Present = false;
             car2recentMove = millis();
-            if (isCarRightLane)
-                putCarRightLane();
-            else
-                putCarLeftLane();
+            displayLevel();
         }
         else
             car2recentMove += car2Speed; // Increment car2recentMove by car2Speed
