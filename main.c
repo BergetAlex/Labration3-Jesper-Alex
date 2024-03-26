@@ -178,12 +178,16 @@ void moveCar2() {
         lcd.setCursor(car[i].x, car[i].y);
         lcd.write(car2Char);
 
-        if (car[i].x == 0) { //när bilen når slutet av skärmen så tas den bort och score ökar
+        if (currentCar2XPos == 0) { //när bilen når slutet av skärmen så tas den bort och score ökar
             score++;
-            lcd.setCursor(car[i].x, car[i].y);
-            lcd.print(" ");
-            car[i].isPresent = false;
-            car[i].lastMove = millis();
+            lcd.setCursor(currentCar2XPos, currentCar2YPos);
+            lcd.clear();
+            isCar2Present = false;
+            car2recentMove = millis();
+            if (isCarRightLane)
+                putCarRightLane();
+            else
+                putCarLeftLane();
         }
         else
             car[i].lastMove += car2Speed; // Increment car lastMove by car2Speed
@@ -401,8 +405,6 @@ void moveCar2Intro() { //funktion som flyttar på bilarna för intro sequencen
     }   
   }
 }
-
-
 
 void introSequence() {
     spawnCar2Intro();  
