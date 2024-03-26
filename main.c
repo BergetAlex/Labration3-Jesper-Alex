@@ -179,7 +179,9 @@ void moveCar2() {
         }
         else
             car[i].lastMove += car2Speed; // Increment car lastMove by car2Speed
+      }
     }
+  }
 }
 
 bool canSpawnCar2() {
