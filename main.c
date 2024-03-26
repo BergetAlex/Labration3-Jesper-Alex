@@ -364,8 +364,6 @@ void moveCar2Intro() { //funktion som flyttar på bilarna för intro sequencen
   }
 }
 
-
-
 void introSequence() {
     spawnCar2Intro();  
       //flyttar bilarna tills de når slutet av skärmen
