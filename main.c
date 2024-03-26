@@ -3,6 +3,14 @@
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
+void handleGameOver(); // Declare the handleGameOver function
+void displayLevel(); // Declare the displayLevel function
+void introSequence(); // Declare the introSequence function
+void startGame(); // Declare the startGame function
+void handleGame(); // Declare the handleGame function
+
+//TODO: Fixa så att score inte skriver över en 
+
 byte car[8] = {
   B00000,
   B00000,
@@ -36,29 +44,34 @@ byte spawn1[8] = {
   B11111
 };
 
-byte spawn2[8] = {
-  B11111,
-  B00011,
-  B00001,
-  B00001,
-  B00001,
-  B00001,
-  B00011,
-  B11111
-};
-
+//knapparna pinar
 const int buttonSwitchRightLane = 6;
 const int buttonSwitchLeftLane = 7;
+//----------------------------------------------
 
-int currentCar2XPos,currentCar2YPos; //sparar bil 2's position
-int car2Speed = 500; //hur snabbt bil 2 ska röra sig
+
+//variabler för bilarna
+int currentCar2XPos,currentCar2YPos, introCarXPos, introCarYPos; //sparar bilarnas position
+unsigned long car2Speed = 500; //hur snabbt bil 2 ska röra sig
 unsigned long int car2recentMove; //sparar bil 2's senaste rörelse
 
-const int menuSize = 2;
+unsigned long int introCarSpeed; //hur snabbt intro bilarna ska röra sig
+unsigned long int introCarRecentMove; //sparar intro bilarnas senaste rörelse
+//----------------------------------------------
+
+//variabler för lcdn
+const int menuSize = 2; 
 const int lcdColumn = 16;
-bool isCar2Present = false;
-const int car2Char = 6;
+//----------------------------------------------
+
+//variabler för karaktärerna
 const int carChar = 7;
+const int car2Char = 6;
+const int spawn1Char = 8;
+//----------------------------------------------
+
+//variabler för spelets funktionalitet
+bool isCar2Present = false;
 bool gameOver = false;
 bool isPlaying = false;
 bool isCarRightLane = true;
@@ -66,19 +79,18 @@ int score = 0;
 int highScore = 0;
 int level = 1;
 int amountOfCars = 2;
+//----------------------------------------------
 
 void setup() {
   lcd.begin(16, 2);
-  lcd.createChar(carChar, car);
-  lcd.createChar(car2Char, car2);
+  lcd.createChar(carChar, car); // Create a new character
+  lcd.createChar(car2Char, car2);  // Create a new character
+  lcd.createChar(spawn1Char, spawn1); // Create tunel1
+
   pinMode(buttonSwitchRightLane, INPUT_PULLUP);
   pinMode(buttonSwitchLeftLane, INPUT_PULLUP);
   randomSeed(analogRead(0));
 }
-
-void startGame(); // Declare the startGame function
-
-void handleGame(); // Declare the handleGame function
 
 void loop() {
   lcd.clear();
@@ -88,7 +100,8 @@ void loop() {
 
 void startGame() {
   isPlaying = true;
-
+  isCar2Present = false; //Resetar denna variabel så att bil 2 kan spawna som vanligt vid ny omgång
+  
   while (isPlaying) {
     handleGame();
   }
@@ -131,7 +144,8 @@ int checkCollision() { //kollar om bil2 har kolliderat med bil1
 
 //Funktion för att flytta bil 2
 void moveCar2() {
-    if ((millis() - car2recentMove) > (unsigned long)car2Speed) { // Cast car2Speed to unsigned long
+
+    if ((millis() - car2recentMove) > (unsigned long)car2Speed) { // check if it is time to move the car
         lcd.setCursor(currentCar2XPos, currentCar2YPos);
         lcd.print(" ");
         currentCar2XPos--;
@@ -157,7 +171,7 @@ void moveCar2() {
 //Funktion för att försöka spawna bil 2
 void spawnCar2() {
     if(!isCar2Present) { // Om bilen inte redan är på skärmen
-        int positionX = 15;
+        int positionX = 12;
         int positionY = random(0, 2);
         lcd.setCursor(positionX, positionY);
         lcd.write(car2Char);
@@ -168,8 +182,6 @@ void spawnCar2() {
 
     }   
 }
-
-void handleGameOver(); // Declare the handleGameOver function
 
 //Funktion för att hantera spelet
 void handleGame() {
@@ -211,9 +223,11 @@ void handleGame() {
         displayLevel();    
     }
   }
+  
   isPlaying = false;
   gameOver = false;
   menu();
+
 }
 
 void uppdateHighScore(){
@@ -230,15 +244,10 @@ void handleGameOver() {
     lcd.print("Score: ");
     lcd.print(score);
     delay(3000);
-    
     uppdateHighScore(); //uppdatera highscore om det behövs
+    level = 1; //resetar level
     score = 0;
 }
-
-
-//TODO: fixa animation vid start av spel ordetnlgit
-//TODO: fixa så vi slipper delays?
-
 
 void menu() {
     lcd.clear();
@@ -249,11 +258,14 @@ void menu() {
       lcd.print("2. High Score");
       lcd.setCursor(0, 2);
 
-      if(digitalRead(buttonSwitchRightLane) == HIGH){
+      if(digitalRead(buttonSwitchLeftLane) == HIGH){ //om knapp 1 trycks (starta spelet)
+
+        introSequence(); //spelar intro sequencen
+            
         startGame();
       }
       
-      if(digitalRead(buttonSwitchLeftLane) == HIGH){
+      if(digitalRead(buttonSwitchRightLane) == HIGH){ //om knapp 2 trycks (visa highscore)
         lcd.clear();
         lcd.setCursor(0, 0);
         uppdateHighScore();
@@ -265,37 +277,103 @@ void menu() {
   }
 }
 
-void initialiseLevel() {
-    amountOfCars = level * 2;
-    car2Speed = 500 - (level * 50);
+void initialiseLevel() { //initierar leveln och ökar svårighetsgraden
+    amountOfCars += level;
+    car2Speed = 350 - (level * 10);
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("Level: ");
     lcd.print(level);
     delay(1000);
     lcd.clear();
-    if(level == 10){
-        gameOver = true;
-        lcd.clear();
-        lcd.setCursor(0,0);
-        lcd.print("You Win!");
-        lcd.setCursor(0,1);
-        lcd.print("Score: ");
-        lcd.print(score);
-        delay(3000);
-        menu();
-    }
 }
 
-void displayLevel(){
-    lcd.setCursor(15, 0);
-    lcd.print(score);
-    lcd.setcursor(14,0);
-    lcd.print(spawn1);
-    lcd.setcursor(14,1);
-    lcd.print(spawn2);
+void displayLevel(){ //printar alla statiska saker på skärmen, som level, score och tunnlarna (spawn1)
+    if(score >= 10){ //fixar så vi printar score på rätt plats
+        lcd.setCursor(14, 0);
+        lcd.print(score);
+    }else{
+        lcd.setCursor(15, 0);
+        lcd.print(score);
+    }
+
+    lcd.setCursor(13,0);
+    lcd.write(spawn1Char);
+    lcd.setCursor(13,1);
+    lcd.write(spawn1Char);
     if(isCarRightLane)
         putCarRightLane();
     else
         putCarLeftLane();
+}
+
+void spawnCar2Intro() { //funktion som spawnar 2 bilar för intro sequencen
+    //spawnr bil 1 (intro car variablar)
+    //spawnar bil 2 (current car variablar)
+    introCarXPos = 18;
+    introCarYPos = 0;
+
+    currentCar2XPos = 18;
+    currentCar2YPos = 1;
+
+        lcd.setCursor(introCarXPos, introCarYPos); //spawnar bil 1
+        lcd.write(car2Char);
+
+
+
+        lcd.setCursor(currentCar2XPos, currentCar2YPos); //spawnar bil 2
+        lcd.write(car2Char);
+        introCarSpeed = 300;
+        introCarRecentMove = millis();
+}
+
+//fixa så whilen kollar om X postionen istället för boolen, sparar en variabel
+void moveCar2Intro() { //funktion som flyttar på bilarna för intro sequencen
+  while(introCarXPos > 0){
+    if ((millis() - introCarRecentMove) > introCarSpeed) { // check if it is time to move the car
+        //flyttar bil 1
+        lcd.setCursor(currentCar2XPos, currentCar2YPos);
+        lcd.print(" ");
+        currentCar2XPos--;
+        lcd.setCursor(currentCar2XPos, currentCar2YPos);
+        lcd.write(car2Char);
+
+        //flyttar bil 2  
+        lcd.setCursor(introCarXPos, introCarYPos);
+        lcd.print(" ");
+        introCarXPos--;
+        lcd.setCursor(introCarXPos, introCarYPos);
+        lcd.write(car2Char);        
+        
+        
+        if(introCarXPos == 0) { //när bilarna når slutet av skärmen så tas den bort
+            lcd.setCursor(introCarXPos, introCarYPos);
+            lcd.print(" ");
+            lcd.setCursor(currentCar2XPos, currentCar2YPos);
+            lcd.print(" ");
+        }
+        else
+            introCarRecentMove += introCarSpeed; // Increment car2recentMove by car2Speed
+    }   
+  }
+}
+
+
+
+void introSequence() {
+    spawnCar2Intro();  
+      //flyttar bilarna tills de når slutet av skärmen
+    moveCar2Intro();
+  
+    for(int i = 3; i > 0; i--){
+        lcd.clear();
+        lcd.setCursor(8,1);
+        lcd.print(i);
+        delay(500);
+        lcd.print(" ");
+    }
+    lcd.setCursor(8,1);
+    lcd.print("GO!");
+    delay(500);
+    lcd.clear();
 }
