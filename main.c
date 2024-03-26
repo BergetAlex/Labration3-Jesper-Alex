@@ -1,6 +1,6 @@
 #include <LiquidCrystal.h>
 
-#define MaxCars 3; // Max amount of cars on the screen
+#define MaxCars 3 // Max amount of cars on the screen
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
@@ -9,10 +9,11 @@ void displayLevel(); // Declare the displayLevel function
 void introSequence(); // Declare the introSequence function
 void startGame(); // Declare the startGame function
 void handleGame(); // Declare the handleGame function
-
+void moveCar2();
+bool canSpawnCar2();
 //TODO: Fixa så att score inte skriver över en 
 
-byte car[8] = {
+byte car1[8] = {
   B00000,
   B00000,
   B00010,
@@ -45,12 +46,14 @@ byte spawn1[8] = {
   B11111
 };
 
-typedef struct Car {
+typedef struct car {
   int x;
   int y;
   unsigned long int lastMove;
   bool isPresent;
 }Car;
+
+Car car [MaxCars]; // Skapar en array med 3 bilar
 
 //knapparna pinar
 const int buttonSwitchRightLane = 6;
@@ -88,11 +91,13 @@ int highScore = 0;
 int level = 1;
 int amountOfCars = 2;
 int car2Counter = 0;
+unsigned long int timeSinceCarSpawned = 0; //sparar tiden sedan bil framför spawnades
+unsigned long int timeBetweenCars = 2200; //tiden mellan bilarna
 //----------------------------------------------
 
 void setup() {
   lcd.begin(16, 2);
-  lcd.createChar(carChar, car); // Create a new character
+  lcd.createChar(carChar, car1); // Create a new character
   lcd.createChar(car2Char, car2);  // Create a new character
   lcd.createChar(spawn1Char, spawn1); // Create tunel1
 
@@ -100,7 +105,6 @@ void setup() {
   pinMode(buttonSwitchLeftLane, INPUT);
   randomSeed(analogRead(0));
 
-  Car car [MaxCars]; // Skapar en array med 3 bilar
   for(int i = 0; i < MaxCars; i++) {
     car[i].lastMove = 0;
     car[i].isPresent = false;
@@ -141,20 +145,23 @@ void putCarLeftLane() {
 }
 
 int checkCollision() { //kollar om bil2 har kolliderat med bil1
-    if (isCarRightLane){  //Bil 1 är på 1,0
-        if(currentCar2XPos == 2 && currentCar2YPos == 1)
-            return 1;
-        else    
-            return 0;
-  }      
-
-    if(!isCarRightLane) { //Bil 1 är på 1,1
-        if(currentCar2XPos == 2 && currentCar2YPos == 0)
-            return 1;
-        else
-            return 0;     
+    for(int i = 0; i < MaxCars; i++) {
+        if(car[i].isPresent) {
+            if(isCarRightLane){ //Bil 1 är på 1,0
+                if(car[i].x == 1 && car[i].y == 0)
+                    return 1;
+                else    
+                    return 0;
+            }
+            if(!isCarRightLane) { //Bil 1 är på 1,1
+                if(car[i].x == 1 && car[i].y == 1)
+                    return 1;
+                else
+                    return 0;
+          }
+        }
     }
-}
+} 
 
 
 //Funktion för att flytta bil 2
@@ -185,32 +192,32 @@ void moveCar2() {
 }
 
 bool canSpawnCar2() {
-  int lastCarX = -1; // Initierar lastCarX till -1 för att ha något att jämföra med, som är falskt från början
-  for(int i = 0; i < MaxCars; i++) {
-    if(car[i].isPresent) {
-      if (lastCarX != -1 && car[i].x - lastCarX < 4) {
-        // inte trillräckligt med plats för ny bil
-        return false;
-    }
-      lastCarX = car[i].x; // uppdaterar lastCarX till nuvarande bilens x position
-    }
+
+  if((millis() - timeSinceCarSpawned) > timeBetweenCars) {
+    return true;
   }
-  return true; // tillräckligt med plats för ny bil
+  return false;
 }
+  
 
 //Funktion för att försöka spawna bil 2
 void spawnCar2() {
-   for(int i = 0; i < MaxCars; i++) {
-    if(car[i].isPresent == false) {
-
-      car[i].x = 12;
-      car[i].y = random(0, 2);
-      lcd.setCursor(car[i].x, car[i].y);
-      lcd.write(car2Char);
-      car[i].isPresent = true;
-      car[i].lastMove = millis();
+ if (canSpawnCar2()) {
+    
+    for(int i = 0; i < MaxCars; i++) {
+      
+      if(!car[i].isPresent) {
+        car[i].x = 12;
+        car[i].y = random(0, 2);
+        lcd.setCursor(car[i].x, car[i].y);
+        lcd.write(car2Char);
+        car[i].isPresent = true;
+        car[i].lastMove = millis();
+        timeSinceCarSpawned = millis(); // Update the time of the last spawn
+        break;
+      }
     }
-  }
+ }
 }
 
 //Funktion för att hantera spelet
@@ -218,14 +225,6 @@ void handleGame() {
   while(!gameOver){
     
     displayLevel();
-    static bool spawnCar = true; //körs 1 gång per loop
-        if(spawnCar){ //spawnar bil1 om den inte redan är på skärmen
-            putCarRightLane(); //Bilen börjar på höger sida
-            spawnCar = false;
-        }
-
-    lcd.setCursor(13, 0);
-    //lcd.print(score);
 
     if (digitalRead(buttonSwitchLeftLane) == HIGH && isCarRightLane) { 
         putCarLeftLane(); // Change to left lane
@@ -234,18 +233,14 @@ void handleGame() {
         putCarRightLane(); // Change to right lane
     }
 
-    if(isCar2Present == false){ // Om bilen inte redan är på skärmen
-      //spawnar en bil
+    
       spawnCar2();
-      //spela ljud?
-    }else{
-      //flyttar bilen
       moveCar2();
 
-      if(checkCollision()){ // Om bilen kolliderar
-        handleGameOver(); // Hantera Game over
-      }
-    }
+      //if(checkCollision()){ // Om bilen kolliderar
+       // handleGameOver(); // Hantera Game over
+     // }
+    
     
     if(score == amountOfCars){ //kollar om det är dags för level up
         level++;
@@ -308,6 +303,7 @@ void menu() {
 }
 
 void initialiseLevel() { //initierar leveln och ökar svårighetsgraden
+    timeBetweenCars = car2Speed * 4; //uppdaterar tiden mellan bilarna
     amountOfCars += level;
     car2Speed = 350 - (level * 25);
     lcd.clear();
