@@ -90,7 +90,7 @@ int level = 1;
 int amountOfCars = 2;
 int car2Counter = 0;
 unsigned long int timeSinceCarSpawned = 0; //sparar tiden sedan bil framför spawnades
-unsigned long int timeBetweenCars = 2200; //tiden mellan bilarna
+unsigned long int timeBetweenCars; //tiden mellan bilarna
 int temp = level + score;
 //----------------------------------------------
 
