@@ -197,7 +197,6 @@ void moveCar2() {
 }
 
 bool canSpawnCar2() {
-
   if((millis() - timeSinceCarSpawned) > timeBetweenCars) {
     return true;
   }
@@ -239,7 +238,6 @@ void handleGame() {
         putCarRightLane(); // Change to right lane
     }
 
-    
       spawnCar2();
       moveCar2();
 
@@ -276,7 +274,7 @@ void handleGameOver() {
     delay(3000);
     uppdateHighScore(); //uppdatera highscore om det behövs
     level = 1; //resetar level
-    score = 0;
+    score = 0; //resetar score
 }
 
 void menu() {
@@ -290,8 +288,7 @@ void menu() {
 
       if(digitalRead(buttonSwitchLeftLane) == HIGH){ //om knapp 1 trycks (starta spelet)
 
-        introSequence(); //spelar intro sequencen
-            
+        introSequence(); //spelar intro sequencen           
         startGame();
       }
       
