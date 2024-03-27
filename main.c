@@ -120,6 +120,7 @@ void loop() {
 
 void startGame() {
   isPlaying = true;
+  isCar2Present = false; //Resetar denna variabel så att bil 2 kan spawna som vanligt vid ny omgång
   
   while (isPlaying) {
     handleGame();
@@ -177,16 +178,13 @@ void moveCar2() {
         lcd.setCursor(car[i].x, car[i].y);
         lcd.write(car2Char);
 
-        if (currentCar2XPos == 0) { //när bilen når slutet av skärmen så tas den bort och score ökar
+        if (car[i].x == -1) { //när bilen når slutet av skärmen så tas den bort och score ökar
             score++;
-            lcd.setCursor(currentCar2XPos, currentCar2YPos);
-            lcd.clear();
-            isCar2Present = false;
-            car2recentMove = millis();
-            if (isCarRightLane)
-                putCarRightLane();
-            else
-                putCarLeftLane();
+            lcd.setCursor(car[i].x, car[i].y);
+            lcd.print(" ");
+            car[i].isPresent = false;
+            car[i].lastMove = millis();
+            
         }
         else
             car[i].lastMove += car2Speed; // Increment car lastMove by car2Speed
@@ -345,10 +343,14 @@ void displayLevel(){ //printar alla statiska saker på skärmen, som level, scor
     lcd.write(spawn1Char);
     lcd.setCursor(13,1);
     lcd.write(spawn1Char);
-    if(isCarRightLane)
-        putCarRightLane();
-    else
-        putCarLeftLane();
+    if(isCarRightLane){
+        lcd.setCursor(1, 1);
+        lcd.write(carChar);
+    }
+    else{
+        lcd.setCursor(1, 0);
+        lcd.write(carChar);
+    }
 }
 
 void spawnCar2Intro() { //funktion som spawnar 2 bilar för intro sequencen
