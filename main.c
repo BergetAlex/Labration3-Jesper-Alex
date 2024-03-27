@@ -120,7 +120,6 @@ void loop() {
 
 void startGame() {
   isPlaying = true;
-  isCar2Present = false; //Resetar denna variabel så att bil 2 kan spawna som vanligt vid ny omgång
   
   while (isPlaying) {
     handleGame();
@@ -353,54 +352,48 @@ void displayLevel(){ //printar alla statiska saker på skärmen, som level, scor
 }
 
 void spawnCar2Intro() { //funktion som spawnar 2 bilar för intro sequencen
-    //spawnr bil 1 (intro car variablar)
-    //spawnar bil 2 (current car variablar)
-    introCarXPos = 18;
-    introCarYPos = 0;
-
-    currentCar2XPos = 18;
-    currentCar2YPos = 1;
-
-        lcd.setCursor(introCarXPos, introCarYPos); //spawnar bil 1
+    //spawna bilar i index 0 och 1
+    for(int i = 0; i < 2; i++) {
+        car[i].x = 18;
+        car[i].y = i;
+        lcd.setCursor(car[i].x, car[i].y);
         lcd.write(car2Char);
-
-
-
-        lcd.setCursor(currentCar2XPos, currentCar2YPos); //spawnar bil 2
-        lcd.write(car2Char);
-        introCarSpeed = 300;
-        introCarRecentMove = millis();
+        car[i].isPresent = true;
+        car[i].lastMove = millis();
+    }
+        introCarSpeed = 300; //sätt hastigheten för intro bilarna
 }
 
 //fixa så whilen kollar om X postionen istället för boolen, sparar en variabel
-void moveCar2Intro() { //funktion som flyttar på bilarna för intro sequencen
-  while(introCarXPos > 0){
-    if ((millis() - introCarRecentMove) > introCarSpeed) { // check if it is time to move the car
-        //flyttar bil 1
-        lcd.setCursor(currentCar2XPos, currentCar2YPos);
-        lcd.print(" ");
-        currentCar2XPos--;
-        lcd.setCursor(currentCar2XPos, currentCar2YPos);
-        lcd.write(car2Char);
+void moveCar2Intro() {
+ while((car[0].x > 0 && car[1].x > 0)) {
+    for(int i = 0; i < 2; i++) { // Only move the first two cars (intro cars)
+      if(car[i].isPresent) {
+        if ((millis() - car[i].lastMove) > introCarSpeed) {
+          lcd.setCursor(car[i].x, car[i].y);
+          lcd.print(" ");
+          car[i].x--;
+          lcd.setCursor(car[i].x, car[i].y);
+          lcd.write(car2Char);
 
-        //flyttar bil 2  
-        lcd.setCursor(introCarXPos, introCarYPos);
-        lcd.print(" ");
-        introCarXPos--;
-        lcd.setCursor(introCarXPos, introCarYPos);
-        lcd.write(car2Char);        
-        
-        
-        if(introCarXPos == 0) { //när bilarna når slutet av skärmen så tas den bort
-            lcd.setCursor(introCarXPos, introCarYPos);
+          if (car[i].x == 0) {
+            lcd.setCursor(car[i].x, car[i].y);
             lcd.print(" ");
-            lcd.setCursor(currentCar2XPos, currentCar2YPos);
-            lcd.print(" ");
+            car[i].isPresent = false;
+            car[i].lastMove = 0;
+          } else {
+            car[i].lastMove += introCarSpeed;
+          }
         }
-        else
-            introCarRecentMove += introCarSpeed; // Increment car2recentMove by car2Speed
-    }   
-  }
+      }
+    }
+ }
+ // Reset cars after intro sequence
+ for(int i = 0; i < 2; i++) {
+    car[i].x = 0;
+    car[i].y = 0;
+    car[i].isPresent = false;
+ }
 }
 
 void introSequence() {
