@@ -75,15 +75,15 @@ const int spawn1Char = 8; // Karaktär för tunnlar
 //variabler för spelets funktionalitet
 bool gameOver = false;
 bool isPlaying = false;
-bool isCarRightLane = true;
+bool isCarRightLane = true; //Kollar vilken fil bilen är på ( den vi styr )
 int score = 0;
 int highScore = 0;
-int level = 1;
-int amountOfCars = 2;
-int car2Counter = 0;
+int level = 1; //aktuell level
+int amountOfCars = 2; // Antal bilar som ska spawna per runda
+int car2Counter = 0; // Räknar antalet bilar som spawnats per runda
 unsigned long int timeSinceCarSpawned = 0; //sparar tiden sedan bil framför spawnades
 unsigned long int timeBetweenCars; //tiden mellan bilarna
-int temp = level + score;
+int temp = level + score; //temp variabel för att kolla om det är dags för level up
 //----------------------------------------------
 
 void setup() {
@@ -96,7 +96,7 @@ void setup() {
   pinMode(buttonSwitchLeftLane, INPUT); // Sätt vänster knapp som input
   randomSeed(analogRead(0));
 
-  for(int i = 0; i < MaxCars; i++) { // Sätter all bilar som inte är närvarande
+  for(int i = 0; i < MaxCars; i++) { //initierar bilarna i arrayen
     car[i].lastMove = 0;
     car[i].isPresent = false;
   }
@@ -161,28 +161,28 @@ void moveCar2() {
     if(car[i].isPresent) {     
       if ((millis() - car[i].lastMove) > (unsigned long)car2Speed) { // Kolla om det är dags att flytta bilen
           lcd.setCursor(car[i].x, car[i].y);
-          lcd.print(" ");
+          lcd.print(" "); //tar bort bilen från föregående position
           car[i].x--;
           lcd.setCursor(car[i].x, car[i].y);
-          lcd.write(car2Char);
+          lcd.write(car2Char); //ritar bilen på nya positionen
 
           if (car[i].x == -1) { // När bilen når slutet av skärmen så tas den bort och score ökar
               score++;
               lcd.setCursor(car[i].x, car[i].y);
-              lcd.print(" ");
-              car[i].isPresent = false;
-              car[i].lastMove = millis();
+              lcd.print(" "); //tar bort bilen från skärmen
+              car[i].isPresent = false; 
+              car[i].lastMove = millis(); // Uppdatera tiden för senaste rörelsen
               
           }
           else
-              car[i].lastMove += car2Speed; // Incrementera tiden för senaste rörelsen
+              car[i].lastMove += car2Speed; // Uppdatera tiden för senaste rörelsen
         }
     }
   }
 }
 
 bool canSpawnCar2() { // Kolla om det är dags att spawna bil 2
-  if((millis() - timeSinceCarSpawned) > timeBetweenCars) {
+  if((millis() - timeSinceCarSpawned) > timeBetweenCars) { // Kolla om det är dags att spawna bil med en timer
     return true;
   }
   return false;
@@ -191,7 +191,7 @@ bool canSpawnCar2() { // Kolla om det är dags att spawna bil 2
 
 //Funktion för att spawna bil 2
 void spawnCar2() {
- if (canSpawnCar2() && car2Counter != level) { // Kollar om vi kan spawna bil 2
+ if (canSpawnCar2() && car2Counter != level) { // Kollar om vi kan spawna en ny bil och att vi inte har nått max antal bilar per level vi är på
     
     for(int i = 0; i < MaxCars; i++) {
       
@@ -199,7 +199,7 @@ void spawnCar2() {
         car[i].x = 12;
         car[i].y = random(0, 2);
         lcd.setCursor(car[i].x, car[i].y);
-        lcd.write(car2Char);
+        lcd.write(car2Char); //ritar bilen på skärmen
         car[i].isPresent = true;
         car[i].lastMove = millis(); // Uppdatera tiden för senaste rörelsen
         timeSinceCarSpawned = millis(); // Uppdatera tiden sedan bilen spawnades
@@ -214,7 +214,7 @@ void spawnCar2() {
 void handleGame() {
   while(!gameOver){ // Medans spelet inte är över
     
-    displayLevel(); // Visa level och score
+    displayLevel(); // Visa level och score (uppdaterar score på skärmen)
 
     if (digitalRead(buttonSwitchLeftLane) == HIGH && isCarRightLane) { 
         putCarLeftLane(); // Flytta till vänster fil
@@ -223,8 +223,8 @@ void handleGame() {
         putCarRightLane(); // Flytta till höger fil
     }
 
-      spawnCar2();
-      moveCar2();
+      spawnCar2(); //kollar om vi kan spawna en bil (motståndar bilen)
+      moveCar2(); //kollar om vi kan flytta på bilarna (motståndar bilarna)
 
       if(checkCollision()){ // Om bilen kolliderar
        handleGameOver(); // Hantera Game over
@@ -232,14 +232,14 @@ void handleGame() {
     
     if(temp == score){ //kollar om det är dags för level up
         level++;
-        initialiseLevel();
-        displayLevel();    
+        initialiseLevel(); //initierar leveln
+        displayLevel();   //visar level och score
     }
   }
   
-  isPlaying = false;
-  gameOver = false;
-  menu();
+  isPlaying = false; // När spelet är över sätt isPlaying till false
+  gameOver = false;   // Sätt gameOver till false för att börja om spel loopen
+  menu(); // Gå tillbaka till menyn
 
 }
 
@@ -256,7 +256,7 @@ void handleGameOver() { // Hantera Game Over
     lcd.setCursor(0,1);
     lcd.print("Score: ");
     lcd.print(score);
-    delay(3000);
+    delay(3000); // Vänta 3 sekunder
     uppdateHighScore(); //uppdatera highscore om det behövs
     level = 1; //resetar level
     score = 0; //resetar score
@@ -274,13 +274,13 @@ void menu() { // Meny
       if(digitalRead(buttonSwitchLeftLane) == HIGH){ //om knapp 1 trycks (starta spelet)
 
         introSequence(); //spelar intro sequencen           
-        startGame();
+        startGame(); //starta spel loopen
       }
       
       if(digitalRead(buttonSwitchRightLane) == HIGH){ //om knapp 2 trycks (visa highscore)
         lcd.clear();
         lcd.setCursor(0, 0);
-        uppdateHighScore();
+        uppdateHighScore(); //uppdatera highscore om det behövs
         lcd.print("High Score: ");
         lcd.print(highScore);
         delay(3000);
@@ -291,6 +291,7 @@ void menu() { // Meny
 
 void initialiseLevel() { // Initierar leveln och ökar svårighetsgraden
     
+    //resetar alla bilar i arrayen 
     for(int i = 0; i < MaxCars; i++) {
         car[i].x = 0; // Sätter bilarna till startpositionen
         car[i].y = 0;
