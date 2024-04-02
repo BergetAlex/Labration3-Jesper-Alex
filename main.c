@@ -63,14 +63,7 @@ const int buttonSwitchLeftLane = 7;
 
 //variabler för bilarna
 unsigned long car2Speed = 500; //hur snabbt bil 2 ska röra sig
-unsigned long int car2recentMove; //sparar bil 2's senaste rörelse
-
 unsigned long int introCarSpeed; //hur snabbt intro bilarna ska röra sig
-//----------------------------------------------
-
-//variabler för lcdn
-const int menuSize = 2; // Storlek på menyn
-const int lcdColumn = 16; // Antal kolumner på lcdn
 //----------------------------------------------
 
 //variabler för karaktärerna
@@ -80,7 +73,6 @@ const int spawn1Char = 8; // Karaktär för tunnlar
 //----------------------------------------------
 
 //variabler för spelets funktionalitet
-bool isCar2Present = false;
 bool gameOver = false;
 bool isPlaying = false;
 bool isCarRightLane = true;
