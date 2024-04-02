@@ -166,26 +166,25 @@ int checkCollision() { //kollar om bil2 har kolliderat med bil1
 void moveCar2() {
 
   for(int i = 0; i < MaxCars; i++) {
-    if(car[i].isPresent) {
-      
-    if ((millis() - car[i].lastMove) > (unsigned long)car2Speed) { // Kolla om det är dags att flytta bilen
-        lcd.setCursor(car[i].x, car[i].y);
-        lcd.print(" ");
-        car[i].x--;
-        lcd.setCursor(car[i].x, car[i].y);
-        lcd.write(car2Char);
+    if(car[i].isPresent) {     
+      if ((millis() - car[i].lastMove) > (unsigned long)car2Speed) { // Kolla om det är dags att flytta bilen
+          lcd.setCursor(car[i].x, car[i].y);
+          lcd.print(" ");
+          car[i].x--;
+          lcd.setCursor(car[i].x, car[i].y);
+          lcd.write(car2Char);
 
-        if (car[i].x == -1) { // När bilen når slutet av skärmen så tas den bort och score ökar
-            score++;
-            lcd.setCursor(car[i].x, car[i].y);
-            lcd.print(" ");
-            car[i].isPresent = false;
-            car[i].lastMove = millis();
-            
+          if (car[i].x == -1) { // När bilen når slutet av skärmen så tas den bort och score ökar
+              score++;
+              lcd.setCursor(car[i].x, car[i].y);
+              lcd.print(" ");
+              car[i].isPresent = false;
+              car[i].lastMove = millis();
+              
+          }
+          else
+              car[i].lastMove += car2Speed; // Incrementera tiden för senaste rörelsen
         }
-        else
-            car[i].lastMove += car2Speed; // Incrementera tiden för senaste rörelsen
-      }
     }
   }
 }
